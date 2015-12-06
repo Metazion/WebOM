@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:jms="http://www.springframework.org/schema/jms" xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd 
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd  
+	http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.1.xsd  
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd  
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd  
+	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.1.xsd  
+	http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-4.1.xsd  
+	http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-4.1.xsd  
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd  
+	http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-4.1.xsd  
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd  
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd  
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd">
+
+	<context:annotation-config />
+
+	<aop:aspectj-autoproxy />
+
+	<context:component-scan base-package="com">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<context:property-placeholder location="classpath:resource/dataSource.properties" />
+
+	<bean id="dataSourceAccount" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${account.jdbc.driverClass}" />
+		<property name="jdbcUrl" value="${account.jdbc.url}" />
+		<property name="user" value="${account.jdbc.user}" />
+		<property name="password" value="${account.jdbc.password}" />
+		<property name="initialPoolSize" value="${account.jdbc.initialPoolSize}" />
+		<property name="minPoolSize" value="${account.jdbc.minPoolSize}" />
+		<property name="maxPoolSize" value="${account.jdbc.maxPoolSize}" />
+		<property name="checkoutTimeout" value="${account.jdbc.checkoutTimeout}" />
+		<property name="idleConnectionTestPeriod" value="${account.jdbc.idleConnectionTestPeriod}" />
+		<property name="maxIdleTime" value="${account.jdbc.maxIdleTime}" />
+		<property name="maxStatements" value="${account.jdbc.maxStatements}" />
+		<property name="testConnectionOnCheckout" value="${account.jdbc.testConnectionOnCheckout}" />
+	</bean>
+
+	<bean id="dataSourceGame" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${game.jdbc.driverClass}" />
+		<property name="jdbcUrl" value="${game.jdbc.url}" />
+		<property name="user" value="${game.jdbc.user}" />
+		<property name="password" value="${game.jdbc.password}" />
+		<property name="initialPoolSize" value="${game.jdbc.initialPoolSize}" />
+		<property name="minPoolSize" value="${game.jdbc.minPoolSize}" />
+		<property name="maxPoolSize" value="${game.jdbc.maxPoolSize}" />
+		<property name="checkoutTimeout" value="${game.jdbc.checkoutTimeout}" />
+		<property name="idleConnectionTestPeriod" value="${game.jdbc.idleConnectionTestPeriod}" />
+		<property name="maxIdleTime" value="${game.jdbc.maxIdleTime}" />
+		<property name="maxStatements" value="${game.jdbc.maxStatements}" />
+		<property name="testConnectionOnCheckout" value="${game.jdbc.testConnectionOnCheckout}" />
+	</bean>
+
+	<bean id="dataSourceJournal" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${journal.jdbc.driverClass}" />
+		<property name="jdbcUrl" value="${journal.jdbc.url}" />
+		<property name="user" value="${journal.jdbc.user}" />
+		<property name="password" value="${journal.jdbc.password}" />
+		<property name="initialPoolSize" value="${journal.jdbc.initialPoolSize}" />
+		<property name="minPoolSize" value="${journal.jdbc.minPoolSize}" />
+		<property name="maxPoolSize" value="${journal.jdbc.maxPoolSize}" />
+		<property name="checkoutTimeout" value="${journal.jdbc.checkoutTimeout}" />
+		<property name="idleConnectionTestPeriod" value="${journal.jdbc.idleConnectionTestPeriod}" />
+		<property name="maxIdleTime" value="${journal.jdbc.maxIdleTime}" />
+		<property name="maxStatements" value="${journal.jdbc.maxStatements}" />
+		<property name="testConnectionOnCheckout" value="${journal.jdbc.testConnectionOnCheckout}" />
+	</bean>
+
+	<bean id="dataSource" class="com.metazion.om.core.DynamicDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="dataSourceAccount" value-ref="dataSourceAccount" />
+				<entry key="dataSourceGame" value-ref="dataSourceGame" />
+				<entry key="dataSourceJournal" value-ref="dataSourceJournal" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="dataSourceAccount" />
+	</bean>
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:resource/hibernate.cfg.xml" />
+		<property name="packagesToScan">
+			<list>
+				<value>com.metazion.om.pojo.po</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<aop:config>
+		<aop:pointcut id="serviceMethods" expression="execution(* com.metazion.om.service..*.*(..))" />
+		<aop:advisor advice-ref="txadvice" pointcut-ref="serviceMethods" />
+	</aop:config>
+
+	<tx:advice id="txadvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="get*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="find*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+	<bean id="dataSourceInterceptor" class="com.metazion.om.core.DataSourceInterceptor" />
+
+	<aop:config>
+		<aop:aspect id="dataSourceAspect" ref="dataSourceInterceptor">
+			<aop:pointcut id="dsAccount" expression="execution(* com.metazion.om.controller.account.*.*(..))" />
+			<aop:pointcut id="dsGame" expression="execution(* com.metazion.om.controller.game.*.*(..))" />
+			<aop:pointcut id="dsJournal" expression="execution(* com.metazion.om.controller.journal.*.*(..))" />
+			<aop:before method="setDataSourceAccount" pointcut-ref="dsAccount"/>
+			<aop:before method="setDataSourceGame" pointcut-ref="dsGame"/>
+			<aop:before method="setDataSourceJournal" pointcut-ref="dsJournal"/>
+		</aop:aspect>
+	</aop:config>
+
+</beans>
